@@ -1,5 +1,10 @@
 import math
+from io import StringIO
+import sys
 
+tmp = sys.stdout
+my_result = StringIO()
+sys.stdout = my_result
 """
 Function that will asks for the equation and the initial guesses
 Returns x0, x1, and x2
@@ -7,7 +12,6 @@ Returns x0, x1, and x2
 
 
 def input_values():
-    global equation  # Set as global to be used in multiple functions
     # Asks for inputs
     equation = input("f(x) = ")
     print("Enter the initial guesses")
@@ -23,11 +27,12 @@ Returns the x(x3) and the true value(f(x3))
 """
 
 
-def parabolic_interpolation(x0, x1, x2):
+def parabolic_interpolation(x0, x1, x2, equation):
     value_repeat_ctr = 0  # Counter that will check if the f(x) is repeating
     iteration_ctr = 1  # Counter for the number of iterations
     temp_f3 = 0  # Temporary f(x3). used to check if f(x) is repeating
-    f0, f1, f2 = solve(x0), solve(x1), solve(x2)  # Substitutes the values of the initial guesses to the equation
+    # Substitutes the values of the initial guesses to the equation
+    f0, f1, f2 = solve(x0, equation), solve(x1, equation), solve(x2, equation)
     print("%1s %10s %10s %10s %10s %10s %10s %10s %10s" % (
         "i", "x0", "x1", "x2", "x3", "f0", "f1", "f2", "f3"))  # Print header
     # Loop for the parabolic_interpolation
@@ -37,7 +42,7 @@ def parabolic_interpolation(x0, x1, x2):
         x3 = (f0 * (x1 ** 2 - x2 ** 2) + f1 * (x2 ** 2 - x0 ** 2) + f2 * (x0 ** 2 - x1 ** 2)) / \
              (2 * f0 * (x1 - x2) + 2 * f1 * (x2 - x0) + 2 * f2 * (x0 - x1))
 
-        f3 = solve(x3)  # Substitutes the x3 to the equation
+        f3 = solve(x3, equation)  # Substitutes the x3 to the equation
         print_values(iteration_ctr, x0, x1, x2, x3, f0, f1, f2, f3)
         # Checks if f(x) is repeating
         if round(f3, 6) == round(temp_f3, 6):
@@ -75,7 +80,7 @@ Evaluates the equation
 """
 
 
-def solve(x):
+def solve(x, equation):
     temp_equation = equation.replace("sin", "math.sin")
     temp_equation = temp_equation.replace("cos", "math.cos")
     temp_equation = temp_equation.replace("tan", "math.tan")
@@ -87,12 +92,12 @@ def solve(x):
 Main method
 """
 if __name__ == '__main__':
-    x0, x1, x2 = input_values()
+    # x0, x1, x2 = input_values()
     # global equation
-    # equation = '2*math.sin(x)-((x**2)/10)'
-    # x0 = float(0)
-    # x1 = float(1)
-    # x2 = float(4)
-    x3, f3 = parabolic_interpolation(x0, x1, x2)
+    equation = '2*sin(x)-((x**2)/10)'
+    x0 = float(0)
+    x1 = float(1)
+    x2 = float(4)
+    x3, f3 = parabolic_interpolation(x0, x1, x2, equation)
     print("x = ", x3)
     print("true value = ", f3)
