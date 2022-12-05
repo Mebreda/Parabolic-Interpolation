@@ -1,10 +1,13 @@
 import math
 from io import StringIO
 import sys
+import os
+
 
 tmp = sys.stdout
 my_result = StringIO()
 sys.stdout = my_result
+derivation = ""
 """
 Function that will asks for the equation and the initial guesses
 Returns x0, x1, and x2
@@ -42,6 +45,8 @@ def parabolic_interpolation(x0, x1, x2, equation):
         x3 = (f0 * (x1 ** 2 - x2 ** 2) + f1 * (x2 ** 2 - x0 ** 2) + f2 * (x0 ** 2 - x1 ** 2)) / \
              (2 * f0 * (x1 - x2) + 2 * f1 * (x2 - x0) + 2 * f2 * (x0 - x1))
 
+        # store_derivation(str(f0) + " * (" + str(x1) + "^2 - " + str(x2) + "^2) +" + str(f1) + " * (" + str(x2) + "^2 - " + str(x0) + "^2) +" + str(f2) + " * (" + str(x0) + "^2 - " + str(x1) + "^2)")
+        # store_derivation("2 * " + str(f0) + " * (" + str(x1) + " - " + str(x2) + ") + 2 * " + str(f1) + " * (" + str(x2) + " - " + str(x0) + ") + 2 * " + str(f2) + " * (" + str(x0) + " - " + str(x1) + ")")
         f3 = solve(x3, equation)  # Substitutes the x3 to the equation
         print_values(iteration_ctr, x0, x1, x2, x3, f0, f1, f2, f3)
         # Checks if f(x) is repeating
@@ -88,13 +93,19 @@ def solve(x, equation):
     return eval(temp_equation)
 
 
+def store_derivation(str, str2):
+    str = str + '\n'
+    str = str + "---------------------------------------------------------------"
+
+
+
 """
 Main method
 """
 if __name__ == '__main__':
-    # x0, x1, x2 = input_values()
-    # global equation
-    equation = '2*sin(x)-((x**2)/10)'
+    x0, x1, x2 = input_values()
+    global equation
+    # equation = '2*sin(x)-((x**2)/10)'
     x0 = float(0)
     x1 = float(1)
     x2 = float(4)

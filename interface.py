@@ -176,7 +176,7 @@ def update_sol_subframe(frame, x3, f3):
 
 def show_derivation(root):
     window = Toplevel(root)
-    s = my_result.getvalue()
+    s = show_derivation()
 
     window_frame = ttk.Frame(window, padding="12 10 12 12")
     window_frame.grid(row=0, column=0)
