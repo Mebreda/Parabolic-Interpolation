@@ -48,7 +48,7 @@ def generate_solution(frame):
     sol_frm = ttk.Frame(frame, padding="12 10 12 12")
     deriv_frm = ttk.LabelFrame(frame, padding="10 0 10 10")
     sol_box = Text(sol_frm, height=4, width=30)
-    deriv_btn = ttk.Button(deriv_frm, text="Show Derivation", command=partial(show_derivation, frame))
+    deriv_btn = ttk.Button(deriv_frm, text="Show Solution", command=partial(show_derivation, frame))
     sol_box.grid(row=0, column=0)
     deriv_btn.grid(row=10, column=0)
 
@@ -137,10 +137,9 @@ def solve_handler(text_var, eq_text_var, right_frame):
     x1 = int(text_var[1].get())
     x2 = int(text_var[2].get())
     equation = eq_text_var.get()
-    x3, f3 = parabolic_interpolation(x0, x1, x2, equation)
-    s = my_result.getvalue()
+    x3, f3, table = parabolic_interpolation(x0, x1, x2, equation)
 
-    update_right_subframe(right_frame.children['!labelframe'], s)
+    update_right_subframe(right_frame.children['!labelframe'], table)
     update_sol_subframe(right_frame.children['!labelframe2'].children['!frame'], x3, f3)
 
 
@@ -176,12 +175,12 @@ def update_sol_subframe(frame, x3, f3):
 
 def show_derivation(root):
     window = Toplevel(root)
-    s = show_derivation()
+    s = my_result.getvalue()
 
     window_frame = ttk.Frame(window, padding="12 10 12 12")
     window_frame.grid(row=0, column=0)
 
-    deriv_box = Text(window_frame, height=16, width=80)
+    deriv_box = Text(window_frame, height=25, width=100)
     deriv_box.grid(row=0, column=0)
 
     # Scrollbar logic
