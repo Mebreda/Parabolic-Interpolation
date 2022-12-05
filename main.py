@@ -31,18 +31,16 @@ Returns the x(x3) and the true value(f(x3))
 
 
 def parabolic_interpolation(x0, x1, x2, equation):
+    # Print header
     table = "%1s %10s %10s %10s %10s %10s %10s %10s %10s" % (
-        "i", "x0", "x1", "x2", "x3", "f0", "f1", "f2", "f3")
+        "i", "x0", "f0", "x1", "f1", "x2", "f2", "x3", "f3")
     table += '\n'
     print(table)
-    print("asdasd")
     value_repeat_ctr = 0  # Counter that will check if the f(x) is repeating
     iteration_ctr = 1  # Counter for the number of iterations
     temp_f3 = 0  # Temporary f(x3). used to check if f(x) is repeating
     # Substitutes the values of the initial guesses to the equation
     f0, f1, f2 = solve(x0, equation, 0), solve(x1, equation, 1), solve(x2, equation, 2)
-    # print("%1s %10s %10s %10s %10s %10s %10s %10s %10s" % (
-    #     "i", "x0", "x1", "x2", "x3", "f0", "f1", "f2", "f3"))  # Print header
     # Loop for the parabolic_interpolation
     # Checks if f(x) is repeating more than 3 times
     while value_repeat_ctr < 2:
@@ -50,13 +48,25 @@ def parabolic_interpolation(x0, x1, x2, equation):
         x3 = (f0 * (x1 ** 2 - x2 ** 2) + f1 * (x2 ** 2 - x0 ** 2) + f2 * (x0 ** 2 - x1 ** 2)) / \
              (2 * f0 * (x1 - x2) + 2 * f1 * (x2 - x0) + 2 * f2 * (x0 - x1))
 
+        # Prints the Solution
         print("Iteration ", iteration_ctr)
-        print(str(round(f0, 4)) + " * (" + str(round(x1, 4)) + "^2 - " + str(round(x2, 4)) + "^2) +" + str(round(f1, 4)) + " * (" + str(round(x2, 4)) + "^2 - " + str(round(x0, 4)) + "^2) +" + str(round(f2, 4)) + " * (" + str(round(x0, 4)) + "^2 - " + str(round(x1, 4)) + "^2)")
-        print("______________________________________________________________________________________________")
-        print("2 * " + str(round(f0, 4)) + " * (" + str(round(x1, 4)) + " - " + str(round(x2, 4)) + ") + 2 * " + str(round(f1, 4)) + " * (" + str(round(x2, 4)) + " - " + str(round(x0, 4)) + ") + 2 * " + str(round(f2, 4)) + " * (" + str(round(x0, 4)) + " - " + str(round(x1, 4)) + ")" + '\n')
+        print("      " + str(round(f0, 4)) + " * (" + str(round(x1, 4)) + "^2 - " + str(round(x2, 4)) + "^2) +" +
+              str(round(f1, 4)) + " * (" + str(round(x2, 4)) + "^2 - " + str(round(x0, 4)) + "^2) +" + str(round(f2, 4))
+              + " * (" + str(round(x0, 4)) + "^2 - " + str(round(x1, 4)) + "^2)")
+        print("x3 = ______________________________________________________________________________________________    "
+              "= " + str(round(x3, 4)))
+        print("      " + "2 * " + str(round(f0, 4)) + " * (" + str(round(x1, 4)) + " - " + str(round(x2, 4)) + ") + 2 "
+                                                                                                               "* " +
+              str(round(f1, 4)) + " * (" + str(round(x2, 4)) + " - " + str(round(x0, 4)) + ") + 2 * " + str(round(f2,
+                                                                                                                  4))
+              + " * (" + str(round(x0, 4)) + " - " + str(round(x1, 4)) + ")" + '\n')
         f3 = solve(x3, equation, 3)  # Substitutes the x3 to the equation
-        # print_values(iteration_ctr, x0, x1, x2, x3, f0, f1, f2, f3)
-        table = table + "%1s %10s %10s %10s %10s %10s %10s %10s %10s" % (str(round(iteration_ctr, 4)), str(round(x0, 4)), str(round(x1, 4)), str(round(x2, 4)), str(round(x3, 4)), str(round(f0, 4)), str(round(f1, 4)), str(round(f2, 4)), str(round(f3, 4)))
+        # Adds each iteration to the table string
+        table = table + "%1s %10s %10s %10s %10s %10s %10s %10s %10s" % (str(round(iteration_ctr, 4)), str(round(x0, 4))
+                                                                         , str(round(f0, 4)), str(round(x1, 4)),
+                                                                         str(round(f1, 4)), str(round(x2, 4)),
+                                                                         str(round(f2, 4)), str(round(x3, 4)),
+                                                                         str(round(f3, 4)))
         table += '\n'
         # Checks if f(x) is repeating
         if round(f3, 6) == round(temp_f3, 6):
@@ -99,7 +109,7 @@ def solve(x, equation , num):
     temp_equation = temp_equation.replace("cos", "math.cos")
     temp_equation = temp_equation.replace("tan", "math.tan")
     temp_equation = temp_equation.replace("^", "**")
-    print("f(x" + str(num) + ") = ", temp_equation.replace("x", str(round(x, 4))), '\n')
+    print("f(x" + str(num) + ") = ", equation.replace("x", str(round(x, 4))) + " = " + str(round(eval(temp_equation), 4)), '\n')
     return eval(temp_equation)
 
 

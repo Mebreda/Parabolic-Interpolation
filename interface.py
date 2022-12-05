@@ -19,14 +19,6 @@ def generate_initial_guess_entries(frame):
         entries.append(Entry(frame, textvariable=text_var[ctr], width=6))
         entries[ctr].grid(row=ctr, column=1)
 
-    # for row in range(rows):
-    #     # temporary 1D array for the 2D array (matrix)
-    #     text_var.append([])
-    #     entries.append([])
-    #     for col in range(cols):
-    #         text_var[row].append(StringVar())
-    #         entries[row].append(Entry(frame, textvariable=text_var[row][col], width=6))
-    #         entries[row][col].grid(row=row, column=col)
     return text_var, entries
 
 
@@ -40,8 +32,11 @@ def generate_equation_frame(frame):
 
 
 def generate_table(frame):
-    diagonal_matrix_box = Text(frame, height=30, width=90)
+    diagonal_matrix_box = Text(frame, height=30, width=100)
     diagonal_matrix_box.grid(row=0, column=0)
+    scrollbar = ttk.Scrollbar(frame, command=diagonal_matrix_box.yview)
+    scrollbar.grid(row=0, column=1, sticky='nsew')
+    diagonal_matrix_box['yscrollcommand'] = scrollbar.set
 
 
 def generate_solution(frame):
@@ -65,59 +60,6 @@ def generate_controls(frame, text_var, entries_vars, eq_text_var, eq_entry_var, 
     clearbtn.grid(row=0, column=1)
 
 
-# def extract_matrix_input(text_var):
-    # Create a matrix of N X (N + 1), where the 1 increment
-    # is allocated for the RHS (matrix B)
-    # coef_arr = np.zeros((len(text_var), (len(text_var) + 1)), dtype=float)
-    # for row in range(len(text_var)):
-    #     # Represents 1 row in a 2D array
-    #     tempArr = []
-    #     for col in range(len(text_var[0])):
-    #         tempArr.append(float(text_var[row][col].get()))
-    #     coef_arr[row] = tempArr.copy()
-    #     # Exclude the RHS
-    #     A[row] = tempArr.copy()[:len(tempArr) - 1]
-    #     B.append(float(tempArr[len(tempArr) - 1]))
-    # # Generate X Matrix
-    # sub = str.maketrans("0123456789", "₀₁₂₃₄₅₆₇₈₉")
-    # for i in range(len(text_var)):
-    #     X.append(('x' + str(i + 1)).translate(sub))
-
-
-def show_system(eqn_widget, A, B, X):
-    sys_eqn_str = ""
-    operand = ""
-    for row_index, row in enumerate(A):
-        for element_index, element in enumerate(row):
-            temp_str = str(abs(element)) + X[element_index]
-            if element_index + 1 != len(row):
-                next = A[row_index][element_index + 1]
-                if next > 0:
-                    operand = " + "
-                    temp_str += operand
-                elif next < 0:
-                    operand = " - "
-                    temp_str += operand
-            sys_eqn_str += temp_str
-        sys_eqn_str += (" = " + str(B[row_index]) + '\n')
-    eqn_widget.delete('1.0', 'end')
-    eqn_widget.insert('1.0', sys_eqn_str)
-
-
-def clear_mat(mat):
-    for row_index, row in enumerate(mat):
-        for e_index, e in enumerate(row):
-            mat[row_index][e_index] = 0
-
-
-def clear_arr(arr):
-    for i, e in enumerate(arr):
-        if isinstance(e, str):
-            arr[i] = 0
-        else:
-            arr[i] = 0
-
-
 def clear_fields(entries_vars, eq_entry_var):
     blank = ""
 
@@ -130,9 +72,6 @@ def clear_fields(entries_vars, eq_entry_var):
 
 
 def solve_handler(text_var, eq_text_var, right_frame):
-    # extract_matrix_input(text_var, A, B, X)
-    #
-    # show_system(eqn_widget, A, B, X)
     x0 = int(text_var[0].get())
     x1 = int(text_var[1].get())
     x2 = int(text_var[2].get())
@@ -146,20 +85,6 @@ def solve_handler(text_var, eq_text_var, right_frame):
 def update_right_subframe(frame, mat):
     frame.children['!text'].delete('1.0', 'end')
     frame.children['!text'].insert('1.0', str(mat))
-
-
-def update_d_subframe(frame, D):
-    frame_str = ""
-    tr_table = str.maketrans("0123456789", "₀₁₂₃₄₅₆₇₈₉")
-    substr = []
-    for i in range(len(D)):
-        substr.append(('d' + str(i + 1)).translate(tr_table))
-
-    for i, d in enumerate(D):
-        frame_str += substr[i] + " = " + str(d) + '\n'
-
-    frame.children['!text'].delete('1.0', 'end')
-    frame.children['!text'].insert('1.0', frame_str)
 
 
 def update_sol_subframe(frame, x3, f3):
@@ -180,7 +105,7 @@ def show_derivation(root):
     window_frame = ttk.Frame(window, padding="12 10 12 12")
     window_frame.grid(row=0, column=0)
 
-    deriv_box = Text(window_frame, height=25, width=100)
+    deriv_box = Text(window_frame, height=25, width=120)
     deriv_box.grid(row=0, column=0)
 
     # Scrollbar logic
@@ -198,12 +123,10 @@ if __name__ == '__main__':
     # Create the root frame
     root = Tk()
     root.title("Parabolic Interpolation Utility")
-
     # Create the content frame (main frame)
     main_frame = ttk.Frame(root, padding="12 12 12 12")
     # Standard practice, a top level frame must hold other components
     main_frame.grid(column=0, row=0, sticky=(N, W, E, S))
-    # Hold the matrix input fields and the text field that shows
     # the inputted equation
     left_frame = ttk.LabelFrame(main_frame, padding="12 10 12 12")
     left_frame.grid(row=0, column=0)
@@ -219,14 +142,13 @@ if __name__ == '__main__':
     text_vars, entries_vars = generate_initial_guess_entries(initial_guess)
     eq_entry_var, eq_text_var = generate_equation_frame(equation_frame)
 
-    # Right frame will contain the L, U and the solutions to the equation
     right_frame = ttk.LabelFrame(main_frame, padding="12 12 12 12")
     right_frame.grid(row=0, column=1)
 
     generate_controls(control_frame, text_vars, entries_vars, eq_text_var, eq_entry_var, right_frame)
 
     # Populate the right frame
-    # Upper Diagonal Frame
+    # Table Frame
     table_frame = ttk.LabelFrame(right_frame, padding="12 10 12 12", text="Table")
     table_frame.grid(row=0, column=0)
     generate_table(table_frame)
