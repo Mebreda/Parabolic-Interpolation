@@ -3,7 +3,6 @@ from io import StringIO
 import sys
 import os
 
-
 tmp = sys.stdout
 my_result = StringIO()
 sys.stdout = my_result
@@ -21,7 +20,7 @@ def input_values():
     x0 = float(input("x0 = "))
     x1 = float(input("x1 = "))
     x2 = float(input("x2 = "))
-    return x0, x1, x2
+    return x0, x1, x2, equation
 
 
 """
@@ -69,7 +68,7 @@ def parabolic_interpolation(x0, x1, x2, equation):
                                                                          str(round(f3, 4)))
         table += '\n'
         # Checks if f(x) is repeating
-        if round(f3, 6) == round(temp_f3, 6):
+        if round(f3, 5) == round(temp_f3, 5):
             value_repeat_ctr += 1
 
         temp_f3 = f3  # Stores f3 to temp_f3 for checking
@@ -90,7 +89,7 @@ def parabolic_interpolation(x0, x1, x2, equation):
 
 
 """
-Prints the values
+Prints the values of the variables and its true values
 """
 
 
@@ -108,6 +107,9 @@ def solve(x, equation , num):
     temp_equation = equation.replace("sin", "math.sin")
     temp_equation = temp_equation.replace("cos", "math.cos")
     temp_equation = temp_equation.replace("tan", "math.tan")
+    temp_equation = temp_equation.replace("csc", "mpmath.csc")
+    temp_equation = temp_equation.replace("cot", "mpmath.cot")
+    temp_equation = temp_equation.replace("sec", "mpmath.sec")
     temp_equation = temp_equation.replace("^", "**")
     print("f(x" + str(num) + ") = ", equation.replace("x", str(round(x, 4))) + " = " + str(round(eval(temp_equation), 4)), '\n')
     return eval(temp_equation)
@@ -118,12 +120,7 @@ def solve(x, equation , num):
 Main method
 """
 if __name__ == '__main__':
-    # x0, x1, x2 = input_values()
-    # global equation
-    equation = '2*sin(x)-((x**2)/10)'
-    x0 = float(0)
-    x1 = float(1)
-    x2 = float(4)
+    x0, x1, x2, equation = input_values()
     x3, f3, table = parabolic_interpolation(x0, x1, x2, equation)
     print(table)
     print("x = ", x3)

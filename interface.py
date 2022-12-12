@@ -1,7 +1,11 @@
 from tkinter import *
-from tkinter import ttk, simpledialog
+from tkinter import ttk, simpledialog, messagebox
 from functools import partial
 from main import *
+
+"""
+Generates initial guesses entries
+"""
 
 
 def generate_initial_guess_entries(frame):
@@ -22,13 +26,27 @@ def generate_initial_guess_entries(frame):
     return text_var, entries
 
 
+"""
+Generates the equation frame
+"""
+
+
 def generate_equation_frame(frame):
     text = Label(frame, text="f(x) = ")
     text.grid(row=0, column=0)
     text_var = StringVar()
     equation_box = Entry(frame, textvariable=text_var, width=60)
     equation_box.grid(row=0, column=1)
+    text2 = Label(frame, text="ex. 4*x-1.8*x^2+1.2*x^3-0.3*x^4")
+    text2.grid(row=1, column=1)
+    text3 = Label(frame, text="2*sin(x)-(x^2/10)")
+    text3.grid(row=2, column=1)
     return equation_box, text_var
+
+
+"""
+Generates the table
+"""
 
 
 def generate_table(frame):
@@ -37,6 +55,11 @@ def generate_table(frame):
     scrollbar = ttk.Scrollbar(frame, command=diagonal_matrix_box.yview)
     scrollbar.grid(row=0, column=1, sticky='nsew')
     diagonal_matrix_box['yscrollcommand'] = scrollbar.set
+
+
+"""
+Generates the solution
+"""
 
 
 def generate_solution(frame):
@@ -51,40 +74,81 @@ def generate_solution(frame):
     deriv_frm.grid(row=1, column=0)
 
 
+"""
+Generates the controls
+"""
+
+
 def generate_controls(frame, text_var, entries_vars, eq_text_var, eq_entry_var, right_frame):
-    # text_var, eqn_widget, A, B, X
-    solvebtn = ttk.Button(frame, text="Solve",
-                          command=partial(solve_handler, text_var, eq_text_var, right_frame))
+    solvebtn = ttk.Button(frame, text="Solve", command=partial(solve_handler, text_var, eq_text_var, right_frame))
     solvebtn.grid(row=0, column=0)
     clearbtn = ttk.Button(frame, text="Clear", command=partial(clear_fields, entries_vars, eq_entry_var))
     clearbtn.grid(row=0, column=1)
 
 
+"""
+Restarts the program if the problem has been solved 
+"""
+
+
+def check_problem():
+    if my_result.getvalue() != '':
+        messagebox.showinfo("Information", "Operation Complete")
+        messagebox.showinfo("Information", "Restarting Program")
+        os.execl(sys.executable, sys.executable, *sys.argv)
+
+
+"""
+Clears the fields
+"""
+
+
 def clear_fields(entries_vars, eq_entry_var):
     blank = ""
-
     for row in range(len(entries_vars)):
         entries_vars[row].delete(0, END)
 
+    check_problem()
     eq_entry_var.delete(0, END)
     update_right_subframe(right_frame.children['!labelframe'], blank)
     update_sol_subframe(right_frame.children['!labelframe2'].children['!frame'], blank, blank)
 
 
+"""
+Uses the functions in main.py to solve the problem
+Updates the tables and solutions
+"""
+
+
 def solve_handler(text_var, eq_text_var, right_frame):
-    x0 = int(text_var[0].get())
-    x1 = int(text_var[1].get())
-    x2 = int(text_var[2].get())
-    equation = eq_text_var.get()
-    x3, f3, table = parabolic_interpolation(x0, x1, x2, equation)
+    check_problem()
+
+    try:
+        x0 = float(text_var[0].get())
+        x1 = float(text_var[1].get())
+        x2 = float(text_var[2].get())
+        equation = eq_text_var.get()
+        x3, f3, table = parabolic_interpolation(x0, x1, x2, equation)
+    except ValueError:
+        messagebox.showerror("Error", "Invalid input")
 
     update_right_subframe(right_frame.children['!labelframe'], table)
     update_sol_subframe(right_frame.children['!labelframe2'].children['!frame'], x3, f3)
 
 
+"""
+Updates the right subframe
+"""
+
+
 def update_right_subframe(frame, mat):
     frame.children['!text'].delete('1.0', 'end')
     frame.children['!text'].insert('1.0', str(mat))
+
+
+"""
+Updates the solution subframe
+"""
 
 
 def update_sol_subframe(frame, x3, f3):
@@ -94,12 +158,23 @@ def update_sol_subframe(frame, x3, f3):
         frame_str = frame_str + '\n'
         frame_str = frame_str + "True value = " + str(f3)
 
+    if x3 or f3 == 0:
+        frame_str = "x = " + str(x3)
+        frame_str = frame_str + '\n'
+        frame_str = frame_str + "True value = " + str(f3)
+
     frame.children['!text'].delete('1.0', 'end')
     frame.children['!text'].insert('1.0', frame_str)
 
 
+"""
+Shows the derivation
+"""
+
+
 def show_derivation(root):
     window = Toplevel(root)
+
     s = my_result.getvalue()
 
     window_frame = ttk.Frame(window, padding="12 10 12 12")
@@ -118,7 +193,9 @@ def show_derivation(root):
     window.title("Derivation Window")
     # Label(window, text=s, font=('Mistral 18 bold')).place(x=150, y=80)
 
-
+"""
+Main Class
+"""
 if __name__ == '__main__':
     # Create the root frame
     root = Tk()
